@@ -16,16 +16,16 @@ def drawBoundingRects(img, edges):
     img2, contours, hierarchy = cv2.findContours(edges, 1, 2)
     for contour in contours:
         contour_area = cv2.contourArea(contour)
-        if(contour_area > 10):
+        if(contour_area > 20):
             print("Contour area: " + str(contour_area))
             if(detectShape.isRect(contour)):
                 rect = cv2.minAreaRect(contour)
                 box = np.int0(cv2.boxPoints(rect))
                 cv2.drawContours(img, [box], 0, (0,0,255))
             else:
-                polygon = cv2.approxPolyDP(edge, perimeter*0.04, True)
-                box = np.int0(cv2.boxPoints(polygon))
-                cv2.drawContours(img, [box], 0, (255,0,0))
+                isRect, polygon = detectShape.isRectDiagnostic(contour)
+                color = (255,0,0)#*isRect + (0,0,0)*(not isRect)
+                box = cv2.polylines(img, [polygon], True, color)
             # # Finds the portion of the contour that is convex
             # hull = cv2.convexHull(contour)
             # hull_area = cv2.contourArea(hull)
@@ -78,7 +78,7 @@ def findRoadLines(image_path):
     return img
 
 # Run findRoadLines on a test image
-linesFound = findRoadLines("/Users/cbmonk/AnacondaProjects/Advanced-Self-Driving-Car/TestImages/17.png")
+linesFound = findRoadLines("/Users/cbmonk/AnacondaProjects/Advanced-Self-Driving-Car/TestImages/15.png")
 cv2.imshow("Lines detected", linesFound)
 
 # Close everything out when any key is pressed
