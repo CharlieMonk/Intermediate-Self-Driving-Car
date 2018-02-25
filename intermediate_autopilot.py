@@ -11,7 +11,7 @@ def findContours(edges):
             hull_area = cv2.contourArea(cv2.convexHull(contour))
             solidity = float(contour_area)/hull_area
 
-def drawBoundingRects(img, edges):
+def drawBoundingRects(img, bgr_img, edges):
     # Finds the contours of the Canny edges
     img2, contours, hierarchy = cv2.findContours(edges, 1, 2)
     for contour in contours:
@@ -21,11 +21,11 @@ def drawBoundingRects(img, edges):
             if(detectShape.isRect(contour)):
                 rect = cv2.minAreaRect(contour)
                 box = np.int0(cv2.boxPoints(rect))
-                cv2.drawContours(img, [box], 0, (0,0,255))
+                cv2.drawContours(bgr_img, [box], 0, (0,0,255))
             else:
                 isRect, polygon = detectShape.isRectDiagnostic(contour)
                 color = (255,0,0)#*isRect + (0,0,0)*(not isRect)
-                box = cv2.polylines(img, [polygon], True, color)
+                box = cv2.polylines(bgr_img, [polygon], True, color)
             # # Finds the portion of the contour that is convex
             # hull = cv2.convexHull(contour)
             # hull_area = cv2.contourArea(hull)
@@ -39,7 +39,8 @@ def drawBoundingRects(img, edges):
     return img2
 
 def findRoadLines(image_path):
-    img = cv2.imread(image_path, 1)
+    bgr_img = cv2.imread(image_path, 1)
+    img = cv2.cvtColor(bgr_img, cv2.COLOR_BGR2HSV)
 
     # Lower and upper ranges for yellow center lines and white lane lines
     center_lines_lower = np.array([210, 100, 82])
@@ -69,17 +70,18 @@ def findRoadLines(image_path):
     # Draw the lines
     for line in lines:
         x1, y1, x2, y2 = line[0]
-        cv2.line(img, (x1, y1), (x2, y2), (0, 255, 0), thickness=7)
+        cv2.line(bgr_img, (x1, y1), (x2, y2), (0, 255, 0), thickness=7)
 
     # Draw rotated rectangles around the contours
-    img2 = drawBoundingRects(img, edges)
+    img2 = drawBoundingRects(img, bgr_img, edges)
 
     cv2.imshow("edges", img2)
-    return img
+    return img, bgr_img
 
 # Run findRoadLines on a test image
-linesFound = findRoadLines("/Users/cbmonk/AnacondaProjects/Advanced-Self-Driving-Car/TestImages/15.png")
-cv2.imshow("Lines detected", linesFound)
+img, bgr_img = findRoadLines("/Users/cbmonk/AnacondaProjects/Advanced-Self-Driving-Car/TestImages/12.png")
+cv2.imshow("HSV", img)
+cv2.imshow("BGR", bgr_img)
 
 # Close everything out when any key is pressed
 cv2.waitKey(0)
