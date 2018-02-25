@@ -42,7 +42,7 @@ def findRoadLines(image_path):
     img = cv2.imread(image_path, 1)
 
     # Lower and upper ranges for yellow center lines and white lane lines
-    center_lines_lower = np.array([0, 104, 210])
+    center_lines_lower = np.array([210, 100, 82])
     center_lines_upper = np.array([255, 255, 255]) #([160, 234, 255])
 
     # Mask image using center_lines_lower and center_lines_upper
@@ -53,8 +53,8 @@ def findRoadLines(image_path):
     closed = cv2.morphologyEx(res, cv2.MORPH_CLOSE, kernel)
 
     # Lower and upper canny thresholds
-    lower_canny = 100
-    upper_canny = 200
+    lower_canny = 300
+    upper_canny = 400
 
     # Use canny to detect edges
     edges = cv2.Canny(closed, lower_canny, upper_canny)
