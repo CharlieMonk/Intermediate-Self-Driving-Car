@@ -41,7 +41,7 @@ def findRoadLines(image_path):
 
     # Lower and upper canny thresholds
     lower_canny = 100
-    upper_canny = 400
+    upper_canny = 650
 
     # Use canny to detect edges
     edges1 = cv2.Canny(closed, lower_canny, upper_canny)
@@ -66,7 +66,7 @@ def findRoadLines(image_path):
 
 time0 = time.time()
 # Run findRoadLines on a test image
-img, bgr_img = findRoadLines("/Users/cbmonk/AnacondaProjects/Advanced-Self-Driving-Car/TestImages/23.png")
+img, bgr_img = findRoadLines("/Users/cbmonk/AnacondaProjects/Advanced-Self-Driving-Car/TestImages/17.png")
 cv2.imshow("HSV", img)
 cv2.imshow("BGR", bgr_img)
 print("Total time:", time.time()-time0)
