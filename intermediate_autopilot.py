@@ -4,6 +4,7 @@ import shape_detection as detectShape
 import time
 import region_of_interest as ROI
 
+dist = lambda pt1, pt2: ((pt2[1]-pt1[1])**2 + (pt2[0]-pt1[0])**2)**0.5
 def drawBoundingRects(img, bgr_img, edges):
     # Finds the contours of the Canny edges
     img2, contours, hierarchy = cv2.findContours(edges, 1, 2)
@@ -13,7 +14,9 @@ def drawBoundingRects(img, bgr_img, edges):
             if(detectShape.isRect(contour)):
                 rect = cv2.minAreaRect(contour)
                 box = np.int0(cv2.boxPoints(rect))
-                cv2.drawContours(bgr_img, [box], 0, (0,0,255))
+                ratio = dist(box[0], box[1])/dist(box[1], box[2])
+                if(ratio>2 or 1/ratio>2):
+                    cv2.drawContours(bgr_img, [box], 0, (0,0,255))
             diagnosticOn = False
             # If diagnostic mode is on, show the non-rectangular contours
             if(diagnosticOn):
@@ -26,7 +29,6 @@ def drawBoundingRects(img, bgr_img, edges):
 
 def findRoadLines(image_path):
     bgr_img = cv2.imread(image_path, 1)
-    print(bgr_img)
     img = cv2.cvtColor(bgr_img, cv2.COLOR_BGR2HLS)
 
     # Lower and upper ranges for yellow center lines and white lane lines
@@ -67,7 +69,7 @@ def findRoadLines(image_path):
 
 time0 = time.time()
 # Run findRoadLines on a test image
-img, bgr_img = findRoadLines("/Users/cbmonk/AnacondaProjects/Advanced-Self-Driving-Car/TestImages/13.png")
+img, bgr_img = findRoadLines("/Users/cbmonk/AnacondaProjects/Advanced-Self-Driving-Car/TestImages/15.png")
 cv2.imshow("HSV", img)
 cv2.imshow("BGR", bgr_img)
 print("Total time:", time.time()-time0)
