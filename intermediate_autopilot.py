@@ -1,30 +1,26 @@
 import numpy as np
 import cv2
-import shape_detection as detectShape
+from shape_detection import ShapeDetection
 import time
 import region_of_interest as ROI
 
-dist = lambda pt1, pt2: ((pt2[1]-pt1[1])**2 + (pt2[0]-pt1[0])**2)**0.5
 def drawBoundingRects(img, bgr_img, edges):
     # Finds the contours of the Canny edges
     img2, contours, hierarchy = cv2.findContours(edges, 1, 2)
     for contour in contours:
         contour_area = cv2.contourArea(contour)
         if(contour_area > 10 and contour_area<9000):
-            if(detectShape.isRect(contour)):
-                rect = cv2.minAreaRect(contour)
-                box = np.int0(cv2.boxPoints(rect))
-                ratio = dist(box[0], box[1])/dist(box[1], box[2])
-                if(ratio>2 or 1/ratio>2):
+            rect = ShapeDetection(contour)
+            if(rect.isRect()):
+                box = rect.findRect()
+                if(len(box) > 0):
                     cv2.drawContours(bgr_img, [box], 0, (0,0,255))
             diagnosticOn = False
             # If diagnostic mode is on, show the non-rectangular contours
             if(diagnosticOn):
-                isRect, polygon = detectShape.isRectDiagnostic(contour)
+                isRect, polygon = isRectDiagnostic(contour)
                 color = (255,0,0)#*isRect + (0,0,0)*(not isRect)
                 box = cv2.polylines(bgr_img, [polygon], True, color)
-
-
     return img2
 
 def findRoadLines(image_path):
@@ -54,12 +50,13 @@ def findRoadLines(image_path):
     #     edges1 = cv2.Canny(img, lower_canny, upper_canny)
     edges = ROI.roi(edges1, bgr_img)
     # Fit lines to the canny edges
-    lines = cv2.HoughLinesP(edges, 1, np.pi/180, 130, minLineLength=150, maxLineGap=10)
+    lines = cv2.HoughLinesP(edges, 1, np.pi/180, 130, minLineLength=150, maxLineGap=7)
     # Draw the lines
-    for line in lines:
-        x1, y1, x2, y2 = line[0]
-        if(abs((y2-y1)/(x2-x1))>0.5):
-            cv2.line(bgr_img, (x1, y1), (x2, y2), (0, 255, 0), thickness=7)
+    if(lines is not None):
+        for line in lines:
+            x1, y1, x2, y2 = line[0]
+            if(abs((y2-y1)/(x2-x1))>0.5):
+                cv2.line(bgr_img, (x1, y1), (x2, y2), (0,255,0), thickness=7)
 
     # Draw rotated rectangles around the contours
     img2 = drawBoundingRects(img, bgr_img, edges)
