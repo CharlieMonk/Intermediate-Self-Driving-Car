@@ -56,7 +56,8 @@ def findRoadLines(image_path):
     # Draw the lines
     for line in lines:
         x1, y1, x2, y2 = line[0]
-        cv2.line(bgr_img, (x1, y1), (x2, y2), (0, 255, 0), thickness=7)
+        if(abs((y2-y1)/(x2-x1))>0.5):
+            cv2.line(bgr_img, (x1, y1), (x2, y2), (0, 255, 0), thickness=7)
 
     # Draw rotated rectangles around the contours
     img2 = drawBoundingRects(img, bgr_img, edges)
