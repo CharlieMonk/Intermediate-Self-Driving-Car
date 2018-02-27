@@ -13,13 +13,13 @@ class ShapeDetection:
         return box
     def isRect(self):
         perimeter = cv2.arcLength(self.contour, True)
-        polygon = cv2.approxPolyDP(self.contour, perimeter*0.02, True)
+        polygon = cv2.approxPolyDP(self.contour, perimeter*0.04, True)
         box = self.findRect()
         ratio = self.dist(box[0], box[1])/self.dist(box[1], box[2])
         slope = abs(self.slope(box[1],box[2]))
-        return (ratio>3 or 1/ratio>3) and (slope>1)
+        return (ratio>6 or 1/ratio>6) and (slope>0.1)
     def isRectDiagnostic(self):
         perimeter = cv2.arcLength(self.contour, True)
-        polygon = cv2.approxPolyDP(self.contour, perimeter*0.02, True)
+        polygon = cv2.approxPolyDP(self.contour, perimeter*0.04, True)
         isRect = rectSideCheck(polygon)
         return isRect, polygon

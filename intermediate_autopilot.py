@@ -25,7 +25,7 @@ def drawBoundingRects(img, bgr_img, edges):
 
 def findRoadLines(image_path):
     bgr_img = cv2.imread(image_path, 1)
-    img = cv2.cvtColor(bgr_img, cv2.COLOR_BGR2HLS)
+    img = cv2.cvtColor(bgr_img, cv2.COLOR_BGR2HSV)
 
     # Lower and upper ranges for yellow center lines and white lane lines
     center_lines_lower = np.array([255, 255, 255])
@@ -66,7 +66,7 @@ def findRoadLines(image_path):
 
 time0 = time.time()
 # Run findRoadLines on a test image
-img, bgr_img = findRoadLines("/Users/cbmonk/AnacondaProjects/Advanced-Self-Driving-Car/TestImages/15.png")
+img, bgr_img = findRoadLines("/Users/cbmonk/AnacondaProjects/Advanced-Self-Driving-Car/TestImages/14.png")
 cv2.imshow("HSV", img)
 cv2.imshow("BGR", bgr_img)
 print("Total time:", time.time()-time0)
