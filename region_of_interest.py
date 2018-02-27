@@ -16,6 +16,6 @@ def roi(edges, img):
     mask = np.zeros_like(edges)
     verticies = getVerticies(edges.shape)
     cv2.fillPoly(mask, verticies, 255)
-    cv2.polylines(img, verticies, True, 255)
+    #cv2.polylines(img, verticies, True, 255)
     edges = cv2.bitwise_and(mask, edges)
     return edges
