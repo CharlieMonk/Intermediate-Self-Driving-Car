@@ -52,7 +52,7 @@ def findRoadLines(image_path):
     #     edges1 = cv2.Canny(img, lower_canny, upper_canny)
     edges = ROI.roi(edges1, bgr_img)
     # Fit lines to the canny edges
-    lines = cv2.HoughLinesP(edges, 1, np.pi/180, 150, minLineLength=100, maxLineGap=10)
+    lines = cv2.HoughLinesP(edges, 1, np.pi/180, 130, minLineLength=150, maxLineGap=10)
     # Draw the lines
     for line in lines:
         x1, y1, x2, y2 = line[0]
