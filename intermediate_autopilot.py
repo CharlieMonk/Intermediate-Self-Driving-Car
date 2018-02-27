@@ -9,7 +9,7 @@ def drawBoundingRects(img, bgr_img, edges):
     img2, contours, hierarchy = cv2.findContours(edges, 1, 2)
     for contour in contours:
         contour_area = cv2.contourArea(contour)
-        if(contour_area > 10):
+        if(contour_area > 10 and contour_area<9000):
             if(detectShape.isRect(contour)):
                 rect = cv2.minAreaRect(contour)
                 box = np.int0(cv2.boxPoints(rect))
@@ -26,6 +26,7 @@ def drawBoundingRects(img, bgr_img, edges):
 
 def findRoadLines(image_path):
     bgr_img = cv2.imread(image_path, 1)
+    print(bgr_img)
     img = cv2.cvtColor(bgr_img, cv2.COLOR_BGR2HLS)
 
     # Lower and upper ranges for yellow center lines and white lane lines
@@ -41,18 +42,17 @@ def findRoadLines(image_path):
 
     # Lower and upper canny thresholds
     lower_canny = 100
-    upper_canny = 650
+    upper_canny = 300
 
     # Use canny to detect edges
-    edges1 = cv2.Canny(closed, lower_canny, upper_canny)
+    #edges1 = cv2.Canny(closed, lower_canny, upper_canny)
+    edges1 = cv2.Canny(img, lower_canny, upper_canny)
+    # If thresholding didn't work, use the original image
+    # if (lines == None):
+    #     edges1 = cv2.Canny(img, lower_canny, upper_canny)
     edges = ROI.roi(edges1, bgr_img)
     # Fit lines to the canny edges
-    lines = cv2.HoughLinesP(edges, 1, np.pi/180, 100, minLineLength=100,maxLineGap=10)
-
-    # If thresholding didn't work, use the original image
-    if (lines == None):
-        edges = cv2.Canny(img, lower_canny, upper_canny)
-        lines = cv2.HoughLinesP(edges, 1, np.pi/180, 100, minLineLength=100, maxLineGap=10)
+    lines = cv2.HoughLinesP(edges, 1, np.pi/180, 150, minLineLength=100, maxLineGap=10)
     # Draw the lines
     for line in lines:
         x1, y1, x2, y2 = line[0]
@@ -67,7 +67,7 @@ def findRoadLines(image_path):
 
 time0 = time.time()
 # Run findRoadLines on a test image
-img, bgr_img = findRoadLines("/Users/cbmonk/AnacondaProjects/Advanced-Self-Driving-Car/TestImages/17.png")
+img, bgr_img = findRoadLines("/Users/cbmonk/AnacondaProjects/Advanced-Self-Driving-Car/TestImages/13.png")
 cv2.imshow("HSV", img)
 cv2.imshow("BGR", bgr_img)
 print("Total time:", time.time()-time0)
