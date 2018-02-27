@@ -3,11 +3,13 @@ import cv2
 
 def getVerticies(shape):
     height, width = shape
-    bottom_left = (10, height-10)
-    upper_left = (width/4, 0.4*height)
-    upper_right = (0.75*width, 0.4*height)
-    bottom_right = (width-10, height-10)
-    verticies = np.array([[bottom_left, upper_left, upper_right, bottom_right]])
+    bottom_l = (10, height-10)
+    mid_l = (10, bottom_l[1]-150)
+    up_l = (width/4, 0.4*height)
+    up_r = (0.75*width, 0.4*height)
+    bottom_r = (width-10, height-10)
+    mid_r = (bottom_r[0], bottom_r[1]-150)
+    verticies = np.array([[bottom_l, mid_l, up_l, up_r, mid_r, bottom_r]])
     return np.int32(verticies)
 
 def roi(edges, img):
