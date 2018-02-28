@@ -4,7 +4,7 @@ from shape_detection import ShapeDetection
 import time
 import region_of_interest as ROI
 
-def drawObstacles(img, bgr_img, edges):
+def drawObstacles(hsv_img, bgr_img, edges):
     # Finds the contours of the Canny edges
     img2, contours, hierarchy = cv2.findContours(edges, 1, 2)
     for contour in contours:
@@ -23,27 +23,39 @@ def drawObstacles(img, bgr_img, edges):
                 box = cv2.polylines(bgr_img, [polygon], True, color)
     return img2
 
-def findRoadLines(image_path):
+def findRoadLines(img, lower_canny=50, upper_canny=350):
+    # Use canny on HLS to detect hsv_edges
+    edges_ = cv2.Canny(img, lower_canny, upper_canny)
+    # Isolate region of interest
+    hsv_edges = ROI.roi(edges_)
+    # Fit lines to Canny hsv_edges
+    lines = cv2.HoughLinesP(hsv_edges, 1, np.pi/180, 100, minLineLength=100, maxLineGap=7)
+    return lines, hsv_edges
+
+def analyzeImage(image_path):
     bgr_img = cv2.imread(image_path, 1)
-    img = cv2.cvtColor(bgr_img, cv2.COLOR_BGR2HLS)
+    hsv_img = cv2.cvtColor(bgr_img, cv2.COLOR_BGR2HSV)
+    hls_img = cv2.cvtColor(bgr_img, cv2.COLOR_BGR2HLS)
     img_find_noise = bgr_img
 
     # Lower and upper canny thresholds
-    lower_canny = 100
+    lower_canny = 150
     upper_canny = 300
 
     # Use the BGR image to find obstacles because HLS has too much noise
-    edges2 = cv2.Canny(img_find_noise, lower_canny, upper_canny)
+    bgr_edges = cv2.Canny(img_find_noise, lower_canny, upper_canny)
     # Draw the obstacles
-    img2 = drawObstacles(img, bgr_img, edges2)
+    drawObstacles(hsv_img, bgr_img, bgr_edges)
 
-    # Use canny on HLS to detect edges
-    #edges1 = cv2.Canny(closed, lower_canny, upper_canny)
-    edges_ = cv2.Canny(img, lower_canny, upper_canny)
-    # Isolate region of interest
-    edges = ROI.roi(edges_, bgr_img)
-    # Fit lines to Canny edges
-    lines = cv2.HoughLinesP(edges, 1, np.pi/180, 130, minLineLength=100, maxLineGap=7)
+    # # Use canny on HLS to detect hsv_edges
+    # edges_ = cv2.Canny(hsv_img, lower_canny, upper_canny)
+    # # Isolate region of interest
+    # hsv_edges = ROI.roi(edges_, bgr_img)
+    # # Fit lines to Canny hsv_edges
+    # lines = cv2.HoughLinesP(hsv_edges, 1, np.pi/180, 130, minLineLength=100, maxLineGap=7)
+    hsv_lines, hsv_edges = findRoadLines(hsv_img)#, lower_canny, upper_canny)
+    hls_lines, hls_edges = findRoadLines(hls_img)#, lower_canny, upper_canny)
+    lines = np.vstack((hsv_lines, hls_lines))
     # Draw the lines
     if(lines is not None):
         for line in lines:
@@ -52,13 +64,13 @@ def findRoadLines(image_path):
             if(abs((y2-y1)/(x2-x1))>0.5):
                 cv2.line(bgr_img, (x1, y1), (x2, y2), (0,255,0), thickness=7)
 
-    cv2.imshow("edges", edges)
-    return img, bgr_img
+    cv2.imshow("hsv_edges", hsv_edges)
+    return hsv_img, bgr_img
 
 time0 = time.time()
-# Run findRoadLines on a test image
-img, bgr_img = findRoadLines("/Users/cbmonk/AnacondaProjects/Advanced-Self-Driving-Car/TestImages/26.png")
-cv2.imshow("HSV", img)
+# Run analyzeImage on a test image
+hsv_img, bgr_img = analyzeImage("/Users/cbmonk/AnacondaProjects/Advanced-Self-Driving-Car/TestImages/44.png")
+cv2.imshow("HSV", hsv_img)
 cv2.imshow("BGR", bgr_img)
 print("Total time:", time.time()-time0)
 
