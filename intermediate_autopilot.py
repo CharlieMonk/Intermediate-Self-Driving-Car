@@ -32,7 +32,12 @@ def findRoadLines(image_path):
     lower_canny = 100
     upper_canny = 300
 
-    # Use canny to detect edges
+    # Use the BGR image to find obstacles because HLS has too much noise
+    edges2 = cv2.Canny(img_find_noise, lower_canny, upper_canny)
+    # Draw the obstacles
+    img2 = drawObstacles(img, bgr_img, edges2)
+
+    # Use canny on HLS to detect edges
     #edges1 = cv2.Canny(closed, lower_canny, upper_canny)
     edges_ = cv2.Canny(img, lower_canny, upper_canny)
     # Isolate region of interest
@@ -46,17 +51,13 @@ def findRoadLines(image_path):
             # Don't draw lines that are too slanted (to eliminate noise)
             if(abs((y2-y1)/(x2-x1))>0.5):
                 cv2.line(bgr_img, (x1, y1), (x2, y2), (0,255,0), thickness=7)
-    # Use the BGR image to find obstacles because HLS has too much noise
-    edges2 = cv2.Canny(img_find_noise, lower_canny, upper_canny)
-    # Draw the obstacles
-    img2 = drawObstacles(img, bgr_img, edges2)
 
     cv2.imshow("edges", edges)
     return img, bgr_img
 
 time0 = time.time()
 # Run findRoadLines on a test image
-img, bgr_img = findRoadLines("/Users/cbmonk/AnacondaProjects/Advanced-Self-Driving-Car/TestImages/14.png")
+img, bgr_img = findRoadLines("/Users/cbmonk/AnacondaProjects/Advanced-Self-Driving-Car/TestImages/26.png")
 cv2.imshow("HSV", img)
 cv2.imshow("BGR", bgr_img)
 print("Total time:", time.time()-time0)
