@@ -10,11 +10,11 @@ def drawBoundingRects(img, bgr_img, edges):
     for contour in contours:
         contour_area = cv2.contourArea(contour)
         if(contour_area > 10 and contour_area<9000):
-            rect = ShapeDetection(contour)
+            rect = ShapeDetection(contour, bgr_img.shape)
             if(rect.isRect()):
-                box = rect.findRect()
-                if(len(box) > 0):
-                    cv2.drawContours(bgr_img, [box], 0, (0,0,255))
+                pt = rect.findRectAndPt()[1]
+                cv2.circle(bgr_img, pt, 3, (0,0,255))
+                #cv2.drawContours(bgr_img, [box], 0, (0,0,255))
             diagnosticOn = False
             # If diagnostic mode is on, show the non-rectangular contours
             if(diagnosticOn):
@@ -25,7 +25,8 @@ def drawBoundingRects(img, bgr_img, edges):
 
 def findRoadLines(image_path):
     bgr_img = cv2.imread(image_path, 1)
-    img = cv2.cvtColor(bgr_img, cv2.COLOR_BGR2HSV)
+    img = cv2.cvtColor(bgr_img, cv2.COLOR_BGR2HLS)
+    img_find_noise = bgr_img
 
     # Lower and upper ranges for yellow center lines and white lane lines
     center_lines_lower = np.array([255, 255, 255])
@@ -44,13 +45,16 @@ def findRoadLines(image_path):
 
     # Use canny to detect edges
     #edges1 = cv2.Canny(closed, lower_canny, upper_canny)
-    edges1 = cv2.Canny(img, lower_canny, upper_canny)
+    edges_ = cv2.Canny(img, lower_canny, upper_canny)
+    edges2 = cv2.Canny(img_find_noise, lower_canny, upper_canny)
     # If thresholding didn't work, use the original image
     # if (lines == None):
     #     edges1 = cv2.Canny(img, lower_canny, upper_canny)
-    edges = ROI.roi(edges1, bgr_img)
+    edges = ROI.roi(edges_, bgr_img)
+    # Draw rotated rectangles around the contours
+    img2 = drawBoundingRects(img, bgr_img, edges2)
     # Fit lines to the canny edges
-    lines = cv2.HoughLinesP(edges, 1, np.pi/180, 130, minLineLength=150, maxLineGap=7)
+    lines = cv2.HoughLinesP(edges, 1, np.pi/180, 130, minLineLength=20, maxLineGap=7)
     # Draw the lines
     if(lines is not None):
         for line in lines:
@@ -58,15 +62,13 @@ def findRoadLines(image_path):
             if(abs((y2-y1)/(x2-x1))>0.5):
                 cv2.line(bgr_img, (x1, y1), (x2, y2), (0,255,0), thickness=7)
 
-    # Draw rotated rectangles around the contours
-    img2 = drawBoundingRects(img, bgr_img, edges)
 
     cv2.imshow("edges", img2)
     return img, bgr_img
 
 time0 = time.time()
 # Run findRoadLines on a test image
-img, bgr_img = findRoadLines("/Users/cbmonk/AnacondaProjects/Advanced-Self-Driving-Car/TestImages/14.png")
+img, bgr_img = findRoadLines("/Users/cbmonk/AnacondaProjects/Advanced-Self-Driving-Car/TestImages/17.png")
 cv2.imshow("HSV", img)
 cv2.imshow("BGR", bgr_img)
 print("Total time:", time.time()-time0)
