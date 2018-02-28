@@ -23,7 +23,7 @@ def drawObstacles(hsv_img, bgr_img, edges):
                 box = cv2.polylines(bgr_img, [polygon], True, color)
     return img2
 
-def findRoadLines(img, lower_canny=50, upper_canny=350):
+def findRoadLines(img, lower_canny=50, upper_canny=300):
     # Use canny on HLS to detect hsv_edges
     edges_ = cv2.Canny(img, lower_canny, upper_canny)
     # Isolate region of interest
@@ -75,11 +75,11 @@ def displayImage(path):
 
 time0 = time.time()
 # Run analyzeImage on a test image
-isTesting = False
+isTesting = True
 if(not isTesting):
-    displayImage("/Users/cbmonk/AnacondaProjects/Advanced-Self-Driving-Car/TestImages/52.png")
+    displayImage("/Users/cbmonk/AnacondaProjects/Advanced-Self-Driving-Car/TestImages/20.png")
 else:
-    for img in range(1,55):
+    for img in range(1,53):
         path = "/Users/cbmonk/AnacondaProjects/Advanced-Self-Driving-Car/TestImages/"+str(img)+".png"
         displayImage(path)
 print("Total time:", time.time()-time0)
