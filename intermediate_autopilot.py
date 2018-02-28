@@ -67,21 +67,21 @@ def analyzeImage(image_path):
     cv2.imshow("hsv_edges", hsv_edges)
     return hsv_img, bgr_img
 
-time0 = time.time()
-# Run analyzeImage on a test image
-isTesting = True
-if(not isTesting):
-    hsv_img, bgr_img = analyzeImage("/Users/cbmonk/AnacondaProjects/Advanced-Self-Driving-Car/TestImages/52.png")
+def displayImage(path):
+    hsv_img, bgr_img = analyzeImage(path)
     cv2.imshow("HSV", hsv_img)
     cv2.imshow("BGR", bgr_img)
     cv2.waitKey(0)
+
+time0 = time.time()
+# Run analyzeImage on a test image
+isTesting = False
+if(not isTesting):
+    displayImage("/Users/cbmonk/AnacondaProjects/Advanced-Self-Driving-Car/TestImages/52.png")
 else:
     for img in range(1,55):
         path = "/Users/cbmonk/AnacondaProjects/Advanced-Self-Driving-Car/TestImages/"+str(img)+".png"
-        hsv_img, bgr_img = analyzeImage(path)
-        cv2.imshow("HSV", hsv_img)
-        cv2.imshow("BGR", bgr_img)
-        cv2.waitKey(0)
+        displayImage(path)
 print("Total time:", time.time()-time0)
 
 # Close everything out when any key is pressed
