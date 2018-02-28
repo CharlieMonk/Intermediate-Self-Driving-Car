@@ -61,7 +61,7 @@ def analyzeImage(image_path):
         for line in lines:
             x1, y1, x2, y2 = line[0]
             # Don't draw lines that are too slanted (to eliminate noise)
-            if(abs((y2-y1)/(x2-x1))>0.5):
+            if(abs((y2-y1)/(x2-x1))>0.7):
                 cv2.line(bgr_img, (x1, y1), (x2, y2), (0,255,0), thickness=7)
 
     cv2.imshow("hsv_edges", hsv_edges)
@@ -69,11 +69,20 @@ def analyzeImage(image_path):
 
 time0 = time.time()
 # Run analyzeImage on a test image
-hsv_img, bgr_img = analyzeImage("/Users/cbmonk/AnacondaProjects/Advanced-Self-Driving-Car/TestImages/44.png")
-cv2.imshow("HSV", hsv_img)
-cv2.imshow("BGR", bgr_img)
+isTesting = True
+if(not isTesting):
+    hsv_img, bgr_img = analyzeImage("/Users/cbmonk/AnacondaProjects/Advanced-Self-Driving-Car/TestImages/52.png")
+    cv2.imshow("HSV", hsv_img)
+    cv2.imshow("BGR", bgr_img)
+    cv2.waitKey(0)
+else:
+    for img in range(1,55):
+        path = "/Users/cbmonk/AnacondaProjects/Advanced-Self-Driving-Car/TestImages/"+str(img)+".png"
+        hsv_img, bgr_img = analyzeImage(path)
+        cv2.imshow("HSV", hsv_img)
+        cv2.imshow("BGR", bgr_img)
+        cv2.waitKey(0)
 print("Total time:", time.time()-time0)
 
 # Close everything out when any key is pressed
-cv2.waitKey(0)
 cv2.destroyAllWindows()
