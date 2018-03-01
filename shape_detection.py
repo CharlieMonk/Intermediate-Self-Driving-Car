@@ -21,7 +21,7 @@ class ShapeDetection:
         return box, pt
     def isRect(self):
         perimeter = cv2.arcLength(self.contour, True)
-        polygon = cv2.approxPolyDP(self.contour, perimeter*0, True)
+        polygon = cv2.approxPolyDP(self.contour, perimeter*0.01, True)
         box = self.findRectAndPt()[0]
         ratio = self.dist(box[0], box[1])/self.dist(box[1], box[2])
         slope = abs(self.slope(box[1],box[2]))
