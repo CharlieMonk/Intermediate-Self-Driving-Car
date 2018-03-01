@@ -13,7 +13,7 @@ def drawObstacles(hsv_img, bgr_img, edges):
             rect = ShapeDetection(contour, bgr_img.shape)
             if(rect.isRect()):
                 pt = rect.findRectAndPt()[1]
-                cv2.circle(bgr_img, pt, 3, (0,0,255))
+                cv2.circle(bgr_img, pt, 3, (0,0,255), 2)
                 #cv2.drawContours(bgr_img, [box], 0, (0,0,255))
             diagnosticOn = False
             # If diagnostic mode is on, show the non-rectangular contours
@@ -76,9 +76,9 @@ def displayImage(path):
     cv2.waitKey(0)
 
 # Run analyzeImage on a test image
-isTesting = True
+isTesting = False
 if(not isTesting):
-    displayImage("/Users/cbmonk/AnacondaProjects/Advanced-Self-Driving-Car/TestImages/20.png")
+    displayImage("/Users/cbmonk/AnacondaProjects/Advanced-Self-Driving-Car/TestImages/5.png")
 else:
     for img in range(1,53):
         path = "/Users/cbmonk/AnacondaProjects/Advanced-Self-Driving-Car/TestImages/"+str(img)+".png"
