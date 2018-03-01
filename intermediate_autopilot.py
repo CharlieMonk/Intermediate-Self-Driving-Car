@@ -47,12 +47,6 @@ def analyzeImage(image_path):
     # Draw the obstacles
     drawObstacles(hsv_img, bgr_img, bgr_edges)
 
-    # # Use canny on HLS to detect hsv_edges
-    # edges_ = cv2.Canny(hsv_img, lower_canny, upper_canny)
-    # # Isolate region of interest
-    # hsv_edges = ROI.roi(edges_, bgr_img)
-    # # Fit lines to Canny hsv_edges
-    # lines = cv2.HoughLinesP(hsv_edges, 1, np.pi/180, 130, minLineLength=100, maxLineGap=7)
     hsv_lines, hsv_edges = findRoadLines(hsv_img)#, lower_canny, upper_canny)
     hls_lines, hls_edges = findRoadLines(hls_img)#, lower_canny, upper_canny)
     lines = np.vstack((hsv_lines, hls_lines))
@@ -76,11 +70,11 @@ def displayImage(path):
     cv2.waitKey(0)
 
 # Run analyzeImage on a test image
-isTesting = False
+isTesting = True
 if(not isTesting):
     displayImage("/Users/cbmonk/AnacondaProjects/Advanced-Self-Driving-Car/TestImages/5.png")
 else:
-    for img in range(1,53):
+    for img in range(2,53):
         path = "/Users/cbmonk/AnacondaProjects/Advanced-Self-Driving-Car/TestImages/"+str(img)+".png"
         displayImage(path)
 
