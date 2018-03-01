@@ -7,7 +7,7 @@ class ShapeDetection:
         self.height, self.width = shape[:2]
     rectSideCheck = lambda polygon: len(polygon)<6
     dist = lambda self, pt1, pt2: ((pt2[1]-pt1[1])**2 + (pt2[0]-pt1[0])**2)**0.5
-    slope = lambda self, pt1, pt2: (pt2[1]-pt1[1])/(pt2[0]-pt1[0])
+    slope = lambda self, pt1, pt2: (pt2[1]-pt1[1])/(pt2[0]-pt1[0]+0.0001)
     mid = lambda self, pt1, pt2:(int((pt2[0]+pt1[0])/2), int((pt2[1]+pt1[1])/2))
     def findRectAndPt(self):
         rect = cv2.minAreaRect(self.contour)
