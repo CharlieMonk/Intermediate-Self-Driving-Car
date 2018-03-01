@@ -7,8 +7,8 @@ def getVerticies(shape):
     mid_l = (0, bottom_l[1]-150)
     up_l = (width/4, 0.4*height)
     up_r = (0.75*width, 0.4*height)
+    mid_r = (width, height-150)
     bottom_r = (width, height)
-    mid_r = (bottom_r[0], bottom_r[1]-150)
     verticies = np.array([[bottom_l, mid_l, up_l, up_r, mid_r, bottom_r]])
     return np.int32(verticies)
 
